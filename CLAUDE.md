@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A macOS keyboard layout, "Kazakh - PC+": Apple's built-in "Russian – PC" (`com.apple.keylayout.RussianWin`) plus the nine Kazakh-only letters on the Option layer. No dead keys; the menu-bar indicator is a text label (`TISIconLabels` = `ҚҚ`), deliberately no icon file. `README.md` has the key table and install steps.
+A macOS keyboard layout, "Kazakh - PC+": Apple's built-in "Russian – PC" (`com.apple.keylayout.RussianWin`) plus the nine Kazakh-only letters on the Option layer. No dead keys; the menu-bar indicator is a text label (`TISIconLabels` = `ҚҚ`), deliberately no icon file. `README.md` has the key table and install steps. Optionally, the `hold/` input method adds an ABC-style long-press popup on top of the same layout (see below).
 
 ## Pipeline (build/ is generated, src/ is generated-but-kept)
 
@@ -30,4 +30,11 @@ The `.keylayout` is never hand-edited; it is generated from a dump of Apple's ow
 - `<layouts>` keyboard-type ranges: macOS ignores explicit entries for modern types (40+) and resolves them to the ANSI set, so ISO/JIS hardware gets ANSI keys 10/50 (key left of Z types `ё` instead of `]`). Extensive experiments found no `<layout>` configuration that fixes this; `LAYOUTS` in `build_keylayout.py` is the standard Ukelele/Apple list. This Mac is ANSI. `verify.py` treats the ISO/JIS key-50 diffs as known.
 - Apple's Russian PC Command layer is already Latin QWERTY, so it's copied as-is (not derived from US).
 - Every Option key the overlay uses already had Apple symbols (Serbian/Macedonian letters, ÷ ± ∆ µ, curly quotes “ ” on Option+Х); overwriting was an explicit user decision.
-- Dead end: macOS press-and-hold (long-press accent picker) does not work for Cyrillic. Apple's `TextInput_kk` variant tables are iOS keyboard data; held keys on Apple's own built-in "Kazakh" layout also show no popup (and don't repeat). Custom layouts can't add variants (tables are SIP-protected). A long-press UX would need a custom input method (IMKit) app.
+## Long-press input method (`hold/`)
+
+"Kazakh - PC+ Hold" (`dev.tair.inputmethod.KazakhPCPlus`, mode `….kk`) is a keyboard-type IMKit input method: it calls `overrideKeyboardWithKeyboardNamed:@"Kazakh - PC+"` so the client types with the `.keylayout` bundled in its Resources, returns NO for every event, and only steps in on key repeats (`HoldController.swift`): letter/digit repeats are swallowed (ABC's measured rule) and a repeat of a letter in `variants.json` opens the popup (`PopupPanel.swift`); picking calls `insertText(_:replacementRange:)` over the typed letter.
+- Build: `tools/package_hold.sh` (runs `tools/build_variants.py`, which generates `variants.json` from `OVERLAY` + `EXTRA` and asserts it's consistent). Sign every build with the same Apple Development identity: ad hoc (`-`) builds get a new identity each time and macOS re-asks to approve the input method.
+- Debug log: `defaults write dev.tair.inputmethod.KazakhPCPlus debug -bool true` → `/tmp/kazakhhold.log` (logs keystrokes, so off by default).
+- Why not the obvious designs: macOS's own press-and-hold has no Cyrillic popup (Apple's "Kazakh" too; the `TextInput_kk` tables are iOS data, SIP-protected). A third-party *palette* IM (like Apple's PressAndHold.app) gets activate/deactivate but never key events — only the current input source does. A CGEventTap helper would need Accessibility + Input Monitoring.
+- Client quirks found by testing: TextEdit ignores `insertText` sent while it handles an arrow key (so arrows only move the highlight; the text changes on pick); Terminal never routes arrow keys to IMs and returns no line rect (`firstRect` works); clients reconnecting after the IM process restarts get no `activateServer`, so the override is also applied in `init` and lazily in `handle`; the very first key after a restart can still be missed.
+- Testing happens in a Tart macOS VM (synthetic CGEvents over SSH need Accessibility granted to `/usr/libexec/sshd-keygen-wrapper`; selecting a newly installed IM via TIS only works from a GUI-session process after a re-login). Don't send synthetic keys while System Settings may be showing an approval prompt, and don't kill Settings to get focus.
