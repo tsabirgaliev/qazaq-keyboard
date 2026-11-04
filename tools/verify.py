@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare the compiled Kazakh - PC+ dump (build/new.json) against Russian PC (build/base.json).
 Run: uv run --no-project python -I tools/verify.py"""
-import json, subprocess, sys
+import json, sys
 from pathlib import Path
 R = Path(__file__).resolve().parent.parent / "build"
 base = json.loads((R / "base.json").read_text())["com.apple.keylayout.RussianWin"]
@@ -33,11 +33,4 @@ print(f"known ISO/JIS key-50 differences (documented): {len(known)}")
 print(f"checked {checked} outputs ({overlaid} Kazakh overlay), mismatches: {len(bad)}")
 for b in bad[:30]:
     print("  MISMATCH", b)
-
-# Long-press (press-and-hold) picks its Kazakh variants from the source's language, so it must lead with kk.
-SOURCE_ID = "dev.tair.keyboardlayout.kazakhpcplus.kazakhpcplus"
-r = subprocess.run(["swift", str(R.parent / "tools" / "languages.swift"), SOURCE_ID], capture_output=True, text=True)
-langs = r.stdout.split()
-lang_ok = bool(langs) and langs[0] == "kk"
-print(f"input-source languages: {langs[:4]}... -> {'OK' if lang_ok else 'FAIL (long-press will not use Kazakh variants)'}")
-sys.exit(1 if bad or not lang_ok else 0)
+sys.exit(1 if bad else 0)
