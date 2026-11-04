@@ -39,6 +39,14 @@ uv run --no-project python -I tools/verify.py                     # compare agai
 ```
 Change the overlay in `OVERLAY` at the top of `tools/build_keylayout.py`.
 
+## Long-press (press-and-hold)
+Besides the Option chords, holding a base key can show macOS's accent picker with the Kazakh variants, e.g. hold Н → Н/Ң,
+У → У/Ү/Ұ. The variants come from Apple's own Kazakh table (`/System/Library/TextInput/TextInput_kk.bundle`), which macOS
+selects by the input source's language; this layout reports `kk` first, same as Apple's "Kazakh".
+Keys with variants: А Г Е К Н О У Х Ы Ь. On those keys holding no longer repeats the character
+(toggle: `defaults write -g ApplePressAndHoldEnabled -bool true|false`; some apps, e.g. terminals, disable it).
+The variants can't be customised per layout (the tables are in SIP-protected system folders).
+
 ## Known limitation
 macOS resolves modern keyboard types (40+) to the layout's ANSI key set. On ISO/JIS hardware the key left of Z
 therefore types `ё` instead of Apple's `]`/`[`; every other key is identical. ANSI keyboards are unaffected.
