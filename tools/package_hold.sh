@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build + sign the "Kazakh - PC+ Hold" input method into build/"Kazakh PC+ Hold.app". Does NOT install it.
+# Build + sign the "Kazakh – Long Press" input method into build/"Kazakh PC+ Hold.app". Does NOT install it.
 # Usage: tools/package_hold.sh [signing identity | -]   (default: first Apple Development identity, else ad hoc)
 # Needs src/"Kazakh - PC+.keylayout" (tools/build_keylayout.py) — the input method bundles its own copy.
 set -euo pipefail

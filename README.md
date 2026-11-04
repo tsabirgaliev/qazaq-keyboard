@@ -40,7 +40,7 @@ uv run --no-project python -I tools/verify.py                     # compare agai
 Change the overlay in `OVERLAY` at the top of `tools/build_keylayout.py`.
 
 ## Long-press popup (optional input method)
-"Kazakh - PC+ Hold" is the same layout plus an ABC-style press-and-hold popup: hold Н and a popup offers Ң,
+"Kazakh – Long Press" is the same layout plus an ABC-style press-and-hold popup: hold Н and a popup offers Ң,
 hold У for Ұ Ү, and likewise for А Ы Г Ц К О Х (Shift/Caps gives capitals). Pick with 1–9, a click, or ←/→/Tab + Return;
 Esc or any other key keeps the letter. As in ABC, held letters and digits don't repeat (punctuation, space and
 shortcuts do); `defaults write -g ApplePressAndHoldEnabled -bool false` turns the popup and that off.
@@ -49,7 +49,7 @@ It is a separate input source that bundles its own copy of the layout, so it doe
 tools/package_hold.sh                       # builds build/Kazakh PC+ Hold.app (signs with your Apple Development identity)
 cp -R "build/Kazakh PC+ Hold.app" ~/Library/Input\ Methods/
 ```
-Log out and back in, then Input Sources → `+` → Kazakh → "Kazakh - PC+ Hold". macOS asks you to approve a new input
+Log out and back in, then Input Sources → `+` → Kazakh → "Kazakh – Long Press". macOS asks you to approve a new input
 method (it can see what you type); updating keeps that approval only if every build is signed with the same identity.
 Limitations: Terminal doesn't pass arrow keys to input methods (use the numbers); password fields bypass all input methods.
 In Ghostty a pick erases the letter with a backspace (DEL) and types the variant, held letters without variants still

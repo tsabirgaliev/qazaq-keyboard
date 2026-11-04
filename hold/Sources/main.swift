@@ -1,4 +1,4 @@
-// "Kazakh - PC+ Hold" input method: the Kazakh - PC+ layout plus an ABC-style long-press popup.
+// "Kazakh – Long Press" input method: the Kazakh - PC+ layout plus an ABC-style long-press popup.
 import Cocoa
 import InputMethodKit
 
