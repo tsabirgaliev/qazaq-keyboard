@@ -18,7 +18,7 @@ enum Variants {
 /// Logging. Key events are only described when debugging is switched on, because they are what the user types:
 ///   defaults write dev.tair.inputmethod.Qazaq debug -bool true   (then also mirrored to /tmp/qazaq.log)
 enum Log {
-    private static let logger = Logger(subsystem: "dev.tair.inputmethod.Qazaq", category: "hold")
+    private static let logger = Logger(subsystem: "dev.tair.inputmethod.Qazaq", category: "qazaq")
     static var debugEnabled: Bool { UserDefaults.standard.bool(forKey: "debug") }
 
     static func error(_ s: String) { logger.error("\(s, privacy: .public)") }

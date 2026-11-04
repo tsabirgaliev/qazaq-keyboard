@@ -29,7 +29,7 @@ turns the popup and that off.
 
 ## Install
 ```sh
-tools/package_hold.sh                       # builds build/Qazaq.app (signs with your Apple Development identity)
+tools/package.sh                       # builds build/Qazaq.app (signs with your Apple Development identity)
 cp -R "build/Qazaq.app" ~/Library/Input\ Methods/
 ```
 Log out and back in, then System Settings → Keyboard → Text Input → Input Sources → `+` → Kazakh →
@@ -42,7 +42,7 @@ Uninstall: delete the app from `~/Library/Input Methods/` and log out/in.
 ```sh
 swift tools/extract_base.swift build/base.json                    # dump Apple's Russian PC via UCKeyTranslate
 uv run --no-project python -I tools/build_keylayout.py            # base + overlay -> src/*.keylayout
-tools/package_hold.sh                                             # input method, bundles that .keylayout
+tools/package.sh                                             # input method, bundles that .keylayout
 # install it (above), then dump its copy of the layout and compare against Russian PC:
 swift tools/extract_base.swift build/new.json "register:$HOME/Library/Input Methods/Qazaq.app" \
       dev.tair.inputmethod.Qazaq.keylayout.Qazaq

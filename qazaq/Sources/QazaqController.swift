@@ -11,8 +11,8 @@ typealias Client = IMKTextInput & NSObjectProtocol
 ///  - Esc keeps the letter; any other key picks the highlighted variant (if any) and is then typed normally;
 ///    a click elsewhere keeps the letter.
 /// Repeats follow ABC: held letters/digits don't repeat, other keys and Cmd/Ctrl shortcuts do.
-@objc(HoldController)
-final class HoldController: IMKInputController {
+@objc(QazaqController)
+final class QazaqController: IMKInputController {
     static let layoutName = "Qazaq"  // the .keylayout in Contents/Resources
     static let panel = PopupPanel()
 

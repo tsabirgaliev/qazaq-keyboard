@@ -27,7 +27,7 @@
 	<key>InputMethodConnectionName</key>
 	<string>dev_tair_Qazaq_Connection</string>
 	<key>InputMethodServerControllerClass</key>
-	<string>HoldController</string>
+	<string>QazaqController</string>
 	<key>TISInputSourceID</key>
 	<string>dev.tair.inputmethod.Qazaq</string>
 	<key>TISIntendedLanguage</key>
