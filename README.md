@@ -52,6 +52,8 @@ cp -R "build/Kazakh PC+ Hold.app" ~/Library/Input\ Methods/
 Log out and back in, then Input Sources → `+` → Kazakh → "Kazakh - PC+ Hold". macOS asks you to approve a new input
 method (it can see what you type); updating keeps that approval only if every build is signed with the same identity.
 Limitations: Terminal doesn't pass arrow keys to input methods (use the numbers); password fields bypass all input methods.
+In Ghostty a pick erases the letter with a backspace (DEL) and types the variant, held letters without variants still
+repeat, and Return or an arrow key while the popup is open only closes it.
 
 ## Known limitation
 macOS resolves modern keyboard types (40+) to the layout's ANSI key set. On ISO/JIS hardware the key left of Z

@@ -31,9 +31,12 @@ final class HoldController: IMKInputController {
         let keyCode: UInt16
         let base: String
         let items: [String]
-        var range: NSRange  // where the base letter (or the previewed variant) is in the client's text
+        /// Where the base letter is in the client's text; nil for clients without a text model (terminals such as
+        /// Ghostty report the caret as {0,0} and ignore replacementRange): see `open`.
+        var range: NSRange?
         var selected: Int?
     }
+    private static let noRange = NSRange(location: NSNotFound, length: 0)
     private var held: Held?
     private var session: Session?
     private var mouseMonitor: Any?
@@ -156,16 +159,27 @@ final class HoldController: IMKInputController {
         guard let items = Variants.table[h.base], !items.isEmpty else { return false }
         let sel = client.selectedRange()
         let len = (h.base as NSString).length
-        guard sel.location != NSNotFound, sel.length == 0, sel.location >= len else {
-            Log.debug("open: unusable selection \(sel)")
+        let app = client.bundleIdentifier() ?? "?"
+        let range: NSRange?
+        if sel.location != NSNotFound, sel.length == 0, sel.location >= len {
+            range = NSRange(location: sel.location - len, length: len)
+            if let typed = client.attributedSubstring(from: range!)?.string, typed != h.base {
+                Log.debug("open [\(app)]: text before the caret is not the held letter")
+                return false
+            }
+        } else if sel.length == 0, sel.location == 0 || sel.location == NSNotFound {
+            // We just typed a letter, so a caret at 0 means the client has no text model: a terminal (Ghostty).
+            // The letter is already on its way to the pty and replacementRange is ignored, so a pick sends DEL
+            // + the variant instead. Ghostty also encodes keys the input method swallows unless marked text is
+            // up, so a placeholder space is marked while the popup is open.
+            range = nil
+            client.setMarkedText(" ", selectionRange: NSRange(location: 1, length: 0), replacementRange: Self.noRange)
+        } else {
+            Log.debug("open [\(app)]: unusable selection \(sel)")
             return false
         }
-        let range = NSRange(location: sel.location - len, length: len)
-        if let typed = client.attributedSubstring(from: range)?.string, typed != h.base {
-            Log.debug("open: text before the caret is not the held letter")
-            return false
-        }
-        let rect = Self.letterRect(client, range)
+        let caret = NSRange(location: sel.location == NSNotFound ? 0 : sel.location, length: 0)
+        let rect = Self.letterRect(client, range, caret: caret)
         session = Session(client: client, keyCode: h.keyCode, base: h.base, items: items, range: range, selected: nil)
         Self.panel.onPick = { [weak self] i in self?.pick(i) }
         Self.panel.show(items, above: rect)
@@ -174,20 +188,34 @@ final class HoldController: IMKInputController {
             self?.close()
             self?.held = nil
         }
-        Log.debug("open: \(h.base) -> \(items) at \(range) rect=\(rect)")
+        Log.debug("open [\(app)]: \(h.base) -> \(items) at \(range.map { "\($0)" } ?? "caret (no text model)") sel=\(sel) rect=\(rect)")
         return true
     }
 
-    /// Screen rect of the typed letter: firstRect (most apps), else the line rect, else the mouse position.
-    private static func letterRect(_ client: Client, _ range: NSRange) -> NSRect {
-        var actual = NSRange(location: NSNotFound, length: 0)
-        let first = client.firstRect(forCharacterRange: range, actualRange: &actual)
-        if first.origin != .zero || first.size != .zero { return first }
+    /// Screen rect of the typed letter: firstRect of the letter (most apps), else of the caret, else the line rect
+    /// (Claude Desktop and Ghostty return garbage from firstRect but a usable line rect), else the mouse position.
+    private static func letterRect(_ client: Client, _ range: NSRange?, caret: NSRange) -> NSRect {
+        for r in [range, caret].compactMap({ $0 }) {
+            var actual = noRange
+            let first = client.firstRect(forCharacterRange: r, actualRange: &actual)
+            if onScreen(first) { return first }
+            Log.debug("firstRect \(r) unusable: \(first)")
+        }
         var line = NSRect.zero
-        _ = client.attributes(forCharacterIndex: range.location, lineHeightRectangle: &line)
-        if line.origin != .zero || line.size != .zero { return line }
+        _ = client.attributes(forCharacterIndex: (range ?? caret).location, lineHeightRectangle: &line)
+        if onScreen(line) { return line }
         let m = NSEvent.mouseLocation
         return NSRect(x: m.x, y: m.y, width: 0, height: 0)
+    }
+
+    /// A rect a client returned is only trusted if it looks like a line of text on a screen: some clients
+    /// (Claude Desktop, Ghostty) hand back uninitialized values such as (1.6e-314, 0, 1.6e-314, 1.6e-314).
+    private static func onScreen(_ r: NSRect) -> Bool {
+        guard [r.minX, r.minY, r.width, r.height].allSatisfy(\.isFinite), r.height >= 1, r.height < 1000 else {
+            return false
+        }
+        let p = NSPoint(x: r.minX, y: r.minY)
+        return NSScreen.screens.contains { $0.frame.insetBy(dx: -1, dy: -1).contains(p) }
     }
 
     /// Highlights variant `i` in the popup only. (Replacing the text live while arrowing doesn't work: TextEdit
@@ -202,14 +230,25 @@ final class HoldController: IMKInputController {
     /// Replaces the typed letter with variant `i` and closes the popup.
     private func pick(_ i: Int) {
         guard let s = session, s.items.indices.contains(i) else { return }
-        s.client.insertText(s.items[i], replacementRange: s.range)
-        Log.debug("pick \(s.items[i]) at \(s.range); text now \(s.client.attributedSubstring(from: NSRange(location: s.range.location, length: (s.items[i] as NSString).length))?.string ?? "nil")")
-        close()
+        if let range = s.range {
+            s.client.insertText(s.items[i], replacementRange: range)
+            Log.debug("pick \(s.items[i]) at \(range); text now \(s.client.attributedSubstring(from: NSRange(location: range.location, length: (s.items[i] as NSString).length))?.string ?? "nil")")
+        } else {
+            // Terminal: erase the typed letter with DEL (what Backspace sends), then type the variant. Committing
+            // also clears the placeholder marked text; Ghostty passes committed text to the pty byte for byte.
+            s.client.insertText(String(repeating: "\u{7f}", count: s.base.count) + s.items[i], replacementRange: Self.noRange)
+            Log.debug("pick \(s.items[i]) via DEL")
+        }
+        close(picked: true)
     }
 
-    private func close() {
-        guard session != nil else { return }
+    /// Hides the popup. Without a pick, a terminal session drops its placeholder marked text (the letter stays).
+    private func close(picked: Bool = false) {
+        guard let s = session else { return }
         session = nil
+        if s.range == nil && !picked {
+            s.client.setMarkedText("", selectionRange: NSRange(location: 0, length: 0), replacementRange: Self.noRange)
+        }
         Self.panel.hide()
         if let m = mouseMonitor {
             NSEvent.removeMonitor(m)
