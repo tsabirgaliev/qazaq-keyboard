@@ -16,9 +16,9 @@ enum Variants {
 }
 
 /// Logging. Key events are only described when debugging is switched on, because they are what the user types:
-///   defaults write dev.tair.inputmethod.KazakhPCPlus debug -bool true   (then also mirrored to /tmp/kazakhhold.log)
+///   defaults write dev.tair.inputmethod.Qazaq debug -bool true   (then also mirrored to /tmp/qazaq.log)
 enum Log {
-    private static let logger = Logger(subsystem: "dev.tair.inputmethod.KazakhPCPlus", category: "hold")
+    private static let logger = Logger(subsystem: "dev.tair.inputmethod.Qazaq", category: "hold")
     static var debugEnabled: Bool { UserDefaults.standard.bool(forKey: "debug") }
 
     static func error(_ s: String) { logger.error("\(s, privacy: .public)") }
@@ -28,7 +28,7 @@ enum Log {
         let msg = s()
         logger.debug("\(msg, privacy: .public)")
         let line = "\(Date()) \(msg)\n"
-        let url = URL(fileURLWithPath: "/tmp/kazakhhold.log")
+        let url = URL(fileURLWithPath: "/tmp/qazaq.log")
         if let h = try? FileHandle(forWritingTo: url) {
             h.seekToEndOfFile(); h.write(Data(line.utf8)); try? h.close()
         } else {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build src/Kazakh-PC+.keylayout from build/base.json (Russian PC dump) + Kazakh overlay.
+"""Build src/Qazaq.keylayout from build/base.json (Russian PC dump) + Kazakh overlay.
 
 Run:  uv run --no-project python tools/build_keylayout.py
 """
@@ -9,9 +9,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "build" / "base.json"
-OUT = ROOT / "src" / "Kazakh - PC+.keylayout"
+OUT = ROOT / "src" / "Qazaq.keylayout"
 
-NAME = "Kazakh - PC+"
+NAME = "Qazaq"
 KEYBOARD_ID = -23917  # custom layouts use negative IDs
 SRC = "com.apple.keylayout.RussianWin"
 

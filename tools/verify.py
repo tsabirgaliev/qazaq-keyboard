@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare the compiled Kazakh - PC+ dump (build/new.json) against Russian PC (build/base.json).
+"""Compare the compiled Qazaq dump (build/new.json) against Russian PC (build/base.json).
 Run: uv run --no-project python -I tools/verify.py"""
 import json, sys
 from pathlib import Path

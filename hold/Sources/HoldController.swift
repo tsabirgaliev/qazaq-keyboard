@@ -3,7 +3,7 @@ import InputMethodKit
 
 typealias Client = IMKTextInput & NSObjectProtocol
 
-/// Keyboard-type input method: all typing goes through the bundled "Kazakh - PC+" layout (overrideKeyboard),
+/// Keyboard-type input method: all typing goes through the bundled "Qazaq" layout (overrideKeyboard),
 /// and only a held letter that has variants is intercepted, ABC-style:
 ///  - the letter is typed normally on key down; when the key starts repeating, repeats are swallowed and the
 ///    popup appears above the letter;
@@ -13,7 +13,7 @@ typealias Client = IMKTextInput & NSObjectProtocol
 /// Repeats follow ABC: held letters/digits don't repeat, other keys and Cmd/Ctrl shortcuts do.
 @objc(HoldController)
 final class HoldController: IMKInputController {
-    static let layoutName = "Kazakh - PC+"  // the .keylayout in Contents/Resources
+    static let layoutName = "Qazaq"  // the .keylayout in Contents/Resources
     static let panel = PopupPanel()
 
     private static let numberKeys: [UInt16: Int] = [
