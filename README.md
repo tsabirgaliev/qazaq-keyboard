@@ -28,15 +28,29 @@ digits don't repeat (punctuation, space and shortcuts do); `defaults write -g Ap
 turns the popup and that off.
 
 ## Install
+Download `Qazaq-<version>.pkg` from [Releases](https://github.com/tsabirgaliev/qazaq-keyboard/releases) and open it
+(it installs `Qazaq.app` into `/Library/Input Methods`; Apple silicon and Intel, macOS 13+).
+Log out and back in, then System Settings → Keyboard → Text Input → Input Sources → `+` → Kazakh → "Qazaq".
+macOS asks you to approve a new input method (it can see what you type).
+Uninstall: `sudo rm -rf "/Library/Input Methods/Qazaq.app" && sudo pkgutil --forget dev.tair.inputmethod.Qazaq.pkg`,
+then log out/in.
+
+### From source
 ```sh
 tools/package.sh                       # builds build/Qazaq.app (signs with your Apple Development identity)
 cp -R "build/Qazaq.app" ~/Library/Input\ Methods/
 ```
-Log out and back in, then System Settings → Keyboard → Text Input → Input Sources → `+` → Kazakh →
+Don't also install the `.pkg` (two copies with the same bundle ID). Log out and back in, then System Settings → Keyboard → Text Input → Input Sources → `+` → Kazakh →
 "Qazaq". macOS asks you to approve a new input method (it can see what you type); updating keeps that
 approval only if every build is signed with the same identity.
 To update: replace the app in `~/Library/Input Methods/` and run `pkill -x Qazaq` (macOS relaunches it).
 Uninstall: delete the app from `~/Library/Input Methods/` and log out/in.
+
+### Release (maintainer)
+`tools/release.sh` builds `build/Qazaq-<version>.pkg` signed with Developer ID, notarizes and staples it; bump
+`CFBundleShortVersionString`/`CFBundleVersion` in `qazaq/Info.plist` first. One-time setup is in the script's header
+(Developer ID Application + Installer certificates, `xcrun notarytool store-credentials qazaq-notary`).
+Then `gh release create v<version> build/Qazaq-<version>.pkg`.
 
 ## Rebuild from scratch
 ```sh

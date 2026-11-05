@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Build + sign the "Qazaq" input method into build/"Qazaq.app". Does NOT install it.
-# Usage: tools/package.sh [signing identity | -]   (default: first Apple Development identity, else ad hoc)
+# Usage: tools/package.sh [signing identity | -]   (default: first Apple Development identity, else ad hoc;
+#        tools/release.sh passes its Developer ID one)
 # Needs src/"Qazaq.keylayout" (tools/build_keylayout.py) — the input method bundles its own copy.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -11,12 +12,17 @@ IDENTITY="${IDENTITY:--}"
 
 rm -rf "$APP"; mkdir -p "$APP/Contents/MacOS" "$RES/en.lproj"
 uv run --no-project python -I tools/build_variants.py "$RES/variants.json"
-swiftc -O -swift-version 5 -framework Cocoa -framework InputMethodKit qazaq/Sources/*.swift -o "$APP/Contents/MacOS/Qazaq"
+for arch in arm64 x86_64; do   # universal binary, so a downloaded build runs on Intel Macs too
+  swiftc -O -swift-version 5 -target "$arch-apple-macos13" -framework Cocoa -framework InputMethodKit \
+         qazaq/Sources/*.swift -o "build/Qazaq-$arch"
+done
+lipo -create build/Qazaq-arm64 build/Qazaq-x86_64 -output "$APP/Contents/MacOS/Qazaq"
 cp qazaq/Info.plist "$APP/Contents/Info.plist"
 cp qazaq/en.lproj/InfoPlist.strings "$RES/en.lproj/"
 cp "src/Qazaq.keylayout" "$RES/"
 swift qazaq/make_icon.swift "$RES/icon.tiff"   # "ҚҚ" menu icon
 plutil -lint "$APP/Contents/Info.plist" "$RES/en.lproj/InfoPlist.strings" >/dev/null
-codesign --force --sign "$IDENTITY" --options runtime "$APP"
+TS=--timestamp=none; [[ $IDENTITY == "Developer ID"* ]] && TS=--timestamp   # notarization needs a secure timestamp
+codesign --force --sign "$IDENTITY" --options runtime "$TS" "$APP"
 codesign --verify --deep --strict "$APP"
 echo "built $APP (signed with: $IDENTITY)"
