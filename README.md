@@ -22,7 +22,8 @@ and the curly quotes “ ” that were on Option+Х).
 One deliberate fix: on ANSI keyboards Apple's Russian – PC types a Latin `Ë` for Shift+Ё; this layout types Cyrillic `Ё`.
 
 ## Long press
-Hold Н and a popup offers Ң, hold У for Ұ Ү, and likewise for А Ы Г Ц К О Х (Shift/Caps gives capitals).
+Hold Н and a popup offers Ң, hold У for Ү Ұ, hold И (like Ы) for І, and likewise for А Г Ц К О Х (Shift/Caps gives
+capitals).
 Pick with 1–9, a click, or ←/→/Tab + Return; Esc or any other key keeps the letter. As in ABC, held letters and
 digits don't repeat (punctuation, space and shortcuts do); `defaults write -g ApplePressAndHoldEnabled -bool false`
 turns the popup and that off.

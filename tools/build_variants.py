@@ -16,24 +16,25 @@ build_keylayout = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(build_keylayout)
 OVERLAY = build_keylayout.OVERLAY
 
-# Long-press groups by letter similarity (as Apple's iOS Kazakh keyboard does): holding У offers both
-# Ұ (its Option letter) and Ү (Option+Ц). Kazakh alphabet order: У Ұ Ү.
-EXTRA = {"у": ("ү", "Ү")}
+# Long-press lists that differ from a key's own Option letter, in popup order (uppercase is derived).
+# Grouped by letter similarity, as Apple's iOS Kazakh keyboard does: У offers Ү and Ұ (Ұ is its Option
+# letter, Ү is Option+Ц); И offers І like Ы does (И has no Option letter).
+GROUPS = {"у": "үұ", "и": "і"}
 
 
 def build() -> dict[str, list[str]]:
+    lists = {base: GROUPS.get(base, lo) for base, (lo, _) in OVERLAY.items()} | GROUPS
     table: dict[str, list[str]] = {}
-    for base, (lo, up) in OVERLAY.items():
-        extra = EXTRA.get(base)
-        table[base] = [lo] + ([extra[0]] if extra else [])
-        table[base.upper()] = [up] + ([extra[1]] if extra else [])
+    for base, variants in lists.items():
+        table[base] = list(variants)
+        table[base.upper()] = [v.upper() for v in variants]
     return table
 
 
 def check(table: dict[str, list[str]]) -> None:
     for base, (lo, up) in OVERLAY.items():
-        assert table.get(base, [None])[0] == lo, f"{base}: first variant must be its Option letter {lo}"
-        assert table.get(base.upper(), [None])[0] == up, f"{base.upper()}: first variant must be {up}"
+        assert lo in table.get(base, []), f"{base}: variants must include its Option letter {lo}"
+        assert up in table.get(base.upper(), []), f"{base.upper()}: variants must include {up}"
     for base, variants in table.items():
         assert len(base) == 1 and all(len(v) == 1 for v in variants), base
         assert base not in variants and len(set(variants)) == len(variants), base

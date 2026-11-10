@@ -1,7 +1,7 @@
 import Foundation
 import os
 
-/// Long-press table generated from OVERLAY by tools/build_variants.py: {"н": ["ң"], "у": ["ұ", "ү"], ...}.
+/// Long-press table generated from OVERLAY by tools/build_variants.py: {"н": ["ң"], "у": ["ү", "ұ"], ...}.
 enum Variants {
     static let table: [String: [String]] = {
         guard let url = Bundle.main.url(forResource: "variants", withExtension: "json"),
