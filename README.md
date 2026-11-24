@@ -33,7 +33,7 @@ turns the popup and that off.
 Download `Qazaq-<version>.pkg` from [Releases](https://github.com/tsabirgaliev/qazaq-keyboard/releases) and open it
 (it installs `Qazaq.app` into `/Library/Input Methods`; Apple silicon and Intel, macOS 13+).
 Log out and back in, then System Settings → Keyboard → Text Input → Input Sources → `+` → Kazakh → "Qazaq".
-macOS asks you to approve a new input method (it can see what you type).
+macOS asks you to approve a new input method ([why](#privacy)).
 Uninstall: `sudo rm -rf "/Library/Input Methods/Qazaq.app" && sudo pkgutil --forget dev.tair.inputmethod.Qazaq.pkg`,
 then log out/in.
 
@@ -43,7 +43,7 @@ tools/package.sh                       # builds build/Qazaq.app (signs with your
 cp -R "build/Qazaq.app" ~/Library/Input\ Methods/
 ```
 Don't also install the `.pkg` (two copies with the same bundle ID). Log out and back in, then System Settings → Keyboard → Text Input → Input Sources → `+` → Kazakh →
-"Qazaq". macOS asks you to approve a new input method (it can see what you type); updating keeps that
+"Qazaq". macOS asks you to approve a new input method ([why](#privacy)); updating keeps that
 approval only if every build is signed with the same identity.
 To update: replace the app in `~/Library/Input Methods/` and run `pkill -x Qazaq` (macOS relaunches it).
 Uninstall: delete the app from `~/Library/Input Methods/` and log out/in.
@@ -53,6 +53,24 @@ Uninstall: delete the app from `~/Library/Input Methods/` and log out/in.
 `CFBundleShortVersionString`/`CFBundleVersion` in `qazaq/Info.plist` first. One-time setup is in the script's header
 (Developer ID Application + Installer certificates, `xcrun notarytool store-credentials qazaq-notary`).
 Then `gh release create v<version> build/Qazaq-<version>.pkg`.
+
+## Privacy
+When you add Qazaq, macOS warns that "the developer of the input source … can see what you type". It shows that
+for every third-party input method, because the OS routes your keystrokes through it; it isn't specific to Qazaq.
+
+What Qazaq does with them: nothing beyond the layout and the long-press popup. It has no network code, writes no
+files, and never stores or logs what you type. The keystroke debug log used for development exists only in builds
+made with `QAZAQ_DEBUG=1 tools/package.sh`; in every other build, including the releases, that code is compiled out.
+
+You don't have to take this on trust:
+- The whole input method is a handful of Swift files in `qazaq/Sources`. `grep -rn "URLSession\|Network\|socket" qazaq/Sources`
+  finds nothing, and `QAZAQ_DEBUG` appears only in `Support.swift` and the build scripts.
+- In a normal build the log writer isn't in the binary: `nm Qazaq.app/Contents/MacOS/Qazaq | swift demangle | grep -c FileHandle`
+  prints `0` (a `QAZAQ_DEBUG=1` build has it).
+- `nettop -p "$(pgrep -x Qazaq)"` (or Little Snitch) shows it makes no connections.
+- If you'd rather not trust a downloaded binary at all, read the source and [build it yourself](#from-source), signed
+  with your own identity. The released `.pkg` is signed and notarized but not bit-for-bit reproducible (signatures and
+  timestamps differ per build), so building from source is the way to be sure of what runs.
 
 ## Rebuild from scratch
 ```sh

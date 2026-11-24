@@ -15,13 +15,17 @@ enum Variants {
     }()
 }
 
-/// Logging. Key events are only described when debugging is switched on, because they are what the user types:
-///   defaults write dev.tair.inputmethod.Qazaq debug -bool true   (then also mirrored to /tmp/qazaq.log)
+/// Logging. Key events are described only in builds made with `QAZAQ_DEBUG=1 tools/package.sh`, because they are
+/// what the user types; in every other build (including releases) `debug` is an empty function and the code that
+/// would write them does not exist. In a debug build, `defaults write dev.tair.inputmethod.Qazaq debug -bool true`
+/// turns it on (also mirrored to /tmp/qazaq.log).
 enum Log {
     private static let logger = Logger(subsystem: "dev.tair.inputmethod.Qazaq", category: "qazaq")
-    static var debugEnabled: Bool { UserDefaults.standard.bool(forKey: "debug") }
 
     static func error(_ s: String) { logger.error("\(s, privacy: .public)") }
+
+#if QAZAQ_DEBUG
+    static var debugEnabled: Bool { UserDefaults.standard.bool(forKey: "debug") }
 
     static func debug(_ s: @autoclosure () -> String) {
         guard debugEnabled else { return }
@@ -35,4 +39,7 @@ enum Log {
             try? line.write(to: url, atomically: false, encoding: .utf8)
         }
     }
+#else
+    static func debug(_ s: @autoclosure () -> String) {}
+#endif
 }

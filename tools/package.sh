@@ -2,6 +2,7 @@
 # Build + sign the "Qazaq" input method into build/"Qazaq.app". Does NOT install it.
 # Usage: tools/package.sh [signing identity | -]   (default: first Apple Development identity, else ad hoc;
 #        tools/release.sh passes its Developer ID one)
+# QAZAQ_DEBUG=1 compiles in the keystroke debug log (never for releases).
 # Needs src/"Qazaq.keylayout" (tools/build_keylayout.py) — the input method bundles its own copy.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -13,7 +14,7 @@ IDENTITY="${IDENTITY:--}"
 rm -rf "$APP"; mkdir -p "$APP/Contents/MacOS" "$RES/en.lproj"
 uv run --no-project python -I tools/build_variants.py "$RES/variants.json"
 for arch in arm64 x86_64; do   # universal binary, so a downloaded build runs on Intel Macs too
-  swiftc -O -swift-version 5 -target "$arch-apple-macos13" -framework Cocoa -framework InputMethodKit \
+  swiftc -O -swift-version 5 ${QAZAQ_DEBUG:+-DQAZAQ_DEBUG} -target "$arch-apple-macos13" -framework Cocoa -framework InputMethodKit \
          qazaq/Sources/*.swift -o "build/Qazaq-$arch"
 done
 lipo -create build/Qazaq-arm64 build/Qazaq-x86_64 -output "$APP/Contents/MacOS/Qazaq"

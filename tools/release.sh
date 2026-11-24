@@ -14,6 +14,7 @@ identity() { security find-identity -v $2 | sed -n "s/.*\"\($1[^\"]*\)\".*/\1/p"
 APP_ID="${APP_IDENTITY:-$(identity 'Developer ID Application' '-p codesigning')}"
 PKG_ID="${INSTALLER_IDENTITY:-$(identity 'Developer ID Installer' '')}"
 die() { echo "release: $*" >&2; exit 1; }
+[[ -z ${QAZAQ_DEBUG:-} ]] || die "QAZAQ_DEBUG is set; a release must not contain the keystroke debug log"
 [[ -n $APP_ID ]] || die "no 'Developer ID Application' certificate in the keychain"
 if (( NOTARIZE )); then
   [[ $APP_ID == "Developer ID Application"* ]] || die "notarization needs a Developer ID Application identity, not '$APP_ID'"
