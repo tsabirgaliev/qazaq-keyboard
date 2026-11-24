@@ -22,6 +22,10 @@ QWERTY (as in Russian – PC).
 
 One more change: the bare Ё key (top-left, `` ` `` on a US keyboard) is unmapped and types `` ` `` / `~` as on the US layout.
 
+> **Watch out for look-alike Ё:** on ANSI keyboards Apple's own Russian – PC types a *Latin* `Ë` (U+00CB) for Shift+Ё, which looks
+> almost identical to Cyrillic `Ё` (U+0401) but breaks search, sorting and spell-check. Qazaq never produces it: capital Ё
+> comes from Option+Shift+Е (or the Е long-press popup) and is always the Cyrillic letter.
+
 ## Long press
 Hold any letter in the table above and a popup offers its variants (У offers Ү Ұ); Shift/Caps gives capitals.
 Pick with 1–9, a click, or ←/→/Tab + Return; Esc or any other key keeps the letter. As in ABC, held letters and
