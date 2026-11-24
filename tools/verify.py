@@ -6,7 +6,8 @@ from pathlib import Path
 R = Path(__file__).resolve().parent.parent / "build"
 base = json.loads((R / "base.json").read_text())["com.apple.keylayout.RussianWin"]
 new = next(iter(json.loads((R / "new.json").read_text()).values()))
-OVER = {"а": "ә", "ы": "і", "н": "ң", "г": "ғ", "ц": "ү", "у": "ұ", "к": "қ", "о": "ө", "х": "һ"}
+OVER = {"а": "ә", "ы": "і", "н": "ң", "г": "ғ", "ц": "ү", "у": "ұ", "к": "қ", "о": "ө", "х": "һ", "е": "ё"}
+GRAVE = {(s, c): o for c in ("10", "50", "94") for s, o in (("base", "`"), ("shift", "~"), ("caps", "`"))}
 bad, known, checked, overlaid = [], [], 0, 0
 for t in ("ansi", "iso", "jis"):
     letter_code = {base[t]["base"][c]["out"]: c for c in base[t]["base"] if int(c) < 94 and base[t]["base"][c].get("out") in OVER}
@@ -19,8 +20,8 @@ for t in ("ansi", "iso", "jis"):
     for s, keys in base[t].items():
         for c, v in keys.items():
             exp = expected_over.get((s, c), v.get("out", ""))
-            if exp == "Ë":
-                exp = "Ё"  # intentional Ë -> Ё fix
+            if (s, c) in GRAVE and (c in ("10", "50", "94") if t == "ansi" else c == "10"):
+                exp = GRAVE[(s, c)]  # bare Ё key unmapped: US ` / ~
             got = new[t][s].get(c, {}).get("out", "")
             checked += 1
             overlaid += (s, c) in expected_over

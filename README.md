@@ -1,6 +1,6 @@
 # Qazaq (macOS input method)
 
-Apple's "Russian – PC" layout, plus the nine Kazakh-only Cyrillic letters on the **Option** layer and an ABC-style
+Apple's "Russian – PC" layout, plus the nine Kazakh-only Cyrillic letters (and Ё on Option+Е) on the **Option** layer and an ABC-style
 press-and-hold popup for them. No dead keys. The menu-bar indicator is "ҚҚ". Cmd+key shortcuts use Latin QWERTY
 (as in Russian – PC).
 
@@ -15,14 +15,15 @@ press-and-hold popup for them. No dead keys. The menu-bar indicator is "ҚҚ". C
 | К | қ | Қ |
 | О | ө | Ө |
 | Х | һ | Һ |
+| Е | ё | Ё |
 
 These replace what Russian – PC has on Option for those keys (Serbian/Macedonian/Belarusian letters, ÷ ± ∆ µ,
 and the curly quotes “ ” that were on Option+Х).
 
-One deliberate fix: on ANSI keyboards Apple's Russian – PC types a Latin `Ë` for Shift+Ё; this layout types Cyrillic `Ё`.
+One deliberate change: the bare Ё key (top-left, `` ` `` on a US keyboard) is unmapped and types `` ` `` / `~` as on the US layout. Ё and ё are on Option+Е (Shift for capitals) and in the Е long-press popup.
 
 ## Long press
-Hold Н and a popup offers Ң, hold У for Ү Ұ, hold И (like Ы) for І, and likewise for А Г Ц К О Х (Shift/Caps gives
+Hold Н and a popup offers Ң, hold У for Ү Ұ, hold И (like Ы) for І, hold Е for Ё, and likewise for А Г Ц К О Х (Shift/Caps gives
 capitals).
 Pick with 1–9, a click, or ←/→/Tab + Return; Esc or any other key keeps the letter. As in ABC, held letters and
 digits don't repeat (punctuation, space and shortcuts do); `defaults write -g ApplePressAndHoldEnabled -bool false`

@@ -26,6 +26,7 @@ OVERLAY = {
     "к": ("қ", "Қ"),
     "о": ("ө", "Ө"),
     "х": ("һ", "Һ"),
+    "е": ("ё", "Ё"),
 }
 
 # keyMap index -> (state name in base.json, modifier combos)
@@ -78,12 +79,14 @@ def apply_fixes_and_overlay(data):
     report = []
     for tname, states in data.items():
         base = states["base"]
-        # Apple quirk: ANSI Shift/Caps+Ё gives Latin Ë (U+00CB). Use Cyrillic Ё (U+0401).
-        for sname, st in states.items():
-            for code, v in st.items():
-                if v.get("out") == "Ë":
-                    v["out"] = "Ё"
-                    report.append(f"fix  {tname}/{sname}/code {code}: Latin Ë -> Cyrillic Ё")
+        # The bare Ё key is unmapped: it types the US layout's ` / ~ (US dump: base `, shift ~, caps `).
+        # ANSI has it on keys 50 (+ alias 94), ISO/JIS on key 10; Option/Command layers stay as in Russian PC.
+        for code in ("10", "50", "94") if tname == "ansi" else ("10",):
+            for sname, out in (("base", "`"), ("shift", "~"), ("caps", "`")):
+                old = states[sname][code].get("out")
+                states[sname][code] = {"out": out}
+                if tname == "ansi":
+                    report.append(f"unmap {sname:<5} code {code:>3}: {old!r} -> {out!r}")
         letter_code = {}
         for code, v in base.items():
             o = v.get("out", "")

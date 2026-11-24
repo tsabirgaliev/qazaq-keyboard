@@ -11,7 +11,7 @@ A macOS input method, "Qazaq" (`qazaq/`): Apple's built-in "Russian – PC" (`co
 The `.keylayout` is never hand-edited; it is generated from a dump of Apple's own layout:
 
 1. `swift tools/extract_base.swift build/base.json` — dumps Russian PC and US via `UCKeyTranslate` for every keycode × modifier state × keyboard type (ansi/iso/jis).
-2. `uv run --no-project python -I tools/build_keylayout.py` — applies the Kazakh overlay (`OVERLAY` dict) and the `Ë`→`Ё` fix to the dump and writes `src/Qazaq.keylayout`.
+2. `uv run --no-project python -I tools/build_keylayout.py` — applies the Kazakh overlay (`OVERLAY` dict) and the unmapping of the bare Ё key (` and ~ as on US) to the dump and writes `src/Qazaq.keylayout`.
 3. `tools/package.sh` — builds `build/Qazaq.app`, bundling that `.keylayout` (see below).
 4. Install: `rm -rf` the old `~/Library/Input Methods/Qazaq.app`, `cp -R` the new one, `pkill -x Qazaq` (macOS relaunches it on the next key). Label changes show after a log out/in.
 5. Verify (no logout needed): the IM's bundled layout is registered as its own input source; dump it and diff against Russian PC:
