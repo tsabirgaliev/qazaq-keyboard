@@ -7,8 +7,7 @@ QWERTY (as in Russian – PC).
 | Key | Option | Option+Shift (or Caps+Option) | Long press |
 |---|---|---|---|
 | А | ә | Ә | ә |
-| Ы | і | І | і |
-| И | і | І | і |
+| Ы, И | і | І | і |
 | Н | ң | Ң | ң |
 | Г | ғ | Ғ | ғ |
 | Ц | ү | Ү | ү |
