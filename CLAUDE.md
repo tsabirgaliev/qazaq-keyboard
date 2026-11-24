@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A macOS input method, "Qazaq" (`qazaq/`): Apple's built-in "Russian – PC" (`com.apple.keylayout.RussianWin`) plus the nine Kazakh-only letters on the Option layer, with an ABC-style long-press popup for them. The key mapping is a generated `.keylayout` (internal name "Qazaq": its `name` attribute and file name, and the IM's `overrideKeyboard` argument) that the IM bundles in its Resources; there is no standalone layout bundle any more (dropped on purpose — the IM is the only thing installed). No dead keys; the menu-bar indicator is "ҚҚ". `README.md` has the key table and install steps.
+A macOS input method, "Qazaq" (`qazaq/`): Apple's built-in "Russian – PC" (`com.apple.keylayout.RussianWin`) plus the Kazakh-only letters (and ё on Option+Е) on the Option layer, with an ABC-style long-press popup for them. The key mapping is a generated `.keylayout` (internal name "Qazaq": its `name` attribute and file name, and the IM's `overrideKeyboard` argument) that the IM bundles in its Resources; there is no standalone layout bundle any more (dropped on purpose — the IM is the only thing installed). No dead keys; the menu-bar indicator is "ҚҚ". `README.md` has the key table and install steps.
 
 ## Pipeline (build/ is generated, src/ is generated-but-kept)
 

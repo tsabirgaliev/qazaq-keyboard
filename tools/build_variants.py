@@ -18,8 +18,8 @@ OVERLAY = build_keylayout.OVERLAY
 
 # Long-press lists that differ from a key's own Option letter, in popup order (uppercase is derived).
 # Grouped by letter similarity, as Apple's iOS Kazakh keyboard does: У offers Ү and Ұ (Ұ is its Option
-# letter, Ү is Option+Ц); И offers І like Ы does (И has no Option letter).
-GROUPS = {"у": "үұ", "и": "і"}
+# letter, Ү is Option+Ц).
+GROUPS = {"у": "үұ"}
 
 
 def build() -> dict[str, list[str]]:

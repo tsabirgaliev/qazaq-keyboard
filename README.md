@@ -1,30 +1,30 @@
 # Qazaq (macOS input method)
 
-Apple's "Russian – PC" layout, plus the nine Kazakh-only Cyrillic letters (and Ё on Option+Е) on the **Option** layer and an ABC-style
-press-and-hold popup for them. No dead keys. The menu-bar indicator is "ҚҚ". Cmd+key shortcuts use Latin QWERTY
-(as in Russian – PC).
+Apple's "Russian – PC" layout, plus the Kazakh-only Cyrillic letters (and ё) on the **Option** layer and an
+ABC-style press-and-hold popup for them. No dead keys. The menu-bar indicator is "ҚҚ". Cmd+key shortcuts use Latin
+QWERTY (as in Russian – PC).
 
-| Key | Option | Option+Shift (or Caps+Option) |
-|---|---|---|
-| А | ә | Ә |
-| Ы | і | І |
-| Н | ң | Ң |
-| Г | ғ | Ғ |
-| Ц | ү | Ү |
-| У | ұ | Ұ |
-| К | қ | Қ |
-| О | ө | Ө |
-| Х | һ | Һ |
-| Е | ё | Ё |
+| Key | Option | Option+Shift (or Caps+Option) | Long press |
+|---|---|---|---|
+| А | ә | Ә | ә |
+| Ы | і | І | і |
+| И | і | І | і |
+| Н | ң | Ң | ң |
+| Г | ғ | Ғ | ғ |
+| Ц | ү | Ү | ү |
+| У | ұ | Ұ | ү ұ |
+| К | қ | Қ | қ |
+| О | ө | Ө | ө |
+| Х | һ | Һ | һ |
+| Е | ё | Ё | ё |
 
-These replace what Russian – PC has on Option for those keys (Serbian/Macedonian/Belarusian letters, ÷ ± ∆ µ,
-and the curly quotes “ ” that were on Option+Х).
+(Shift/Caps+long press gives the capitals.) These replace what Russian – PC has on Option for those keys
+(Serbian/Macedonian/Belarusian letters, ÷ ± ∆ µ, and the curly quotes “ ” that were on Option+Х).
 
-One deliberate change: the bare Ё key (top-left, `` ` `` on a US keyboard) is unmapped and types `` ` `` / `~` as on the US layout. Ё and ё are on Option+Е (Shift for capitals) and in the Е long-press popup.
+One more change: the bare Ё key (top-left, `` ` `` on a US keyboard) is unmapped and types `` ` `` / `~` as on the US layout.
 
 ## Long press
-Hold Н and a popup offers Ң, hold У for Ү Ұ, hold И (like Ы) for І, hold Е for Ё, and likewise for А Г Ц К О Х (Shift/Caps gives
-capitals).
+Hold any letter in the table above and a popup offers its variants (У offers Ү Ұ); Shift/Caps gives capitals.
 Pick with 1–9, a click, or ←/→/Tab + Return; Esc or any other key keeps the letter. As in ABC, held letters and
 digits don't repeat (punctuation, space and shortcuts do); `defaults write -g ApplePressAndHoldEnabled -bool false`
 turns the popup and that off.
