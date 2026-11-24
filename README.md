@@ -72,3 +72,7 @@ Change the overlay in `OVERLAY` at the top of `tools/build_keylayout.py`.
   still repeat, and Return or an arrow key while the popup is open only closes it.
 - macOS resolves modern keyboard types (40+) to the layout's ANSI key set. On ISO/JIS hardware the key left of Z
   therefore types `ё` instead of Apple's `]`/`[`; every other key is identical. ANSI keyboards are unaffected.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
